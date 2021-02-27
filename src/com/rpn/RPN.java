@@ -12,28 +12,27 @@ public class RPN {
     Map<Character, Integer> precedence = new HashMap<>();
     Map<Character, Integer> associativity = new HashMap<>();        // 0 = Right, 1 = Left
 
-    public static void main(String[] args) {
-        RPN rpn = new RPN();
-        System.out.println(rpn.computeRPN("x*4+12", 2d));       // result = 20
-        System.out.println(rpn.computeRPN("3+x*6", 4d));        // result = 27
-        System.out.println(rpn.computeRPN("2*(x+1)", 6d));      // result = 14
-        System.out.println(rpn.computeRPN("x-4+4", 8d));        // result = 8
-        System.out.println(rpn.computeRPN("2*7^x+3", 2d));     // result =
-        System.out.println(rpn.computeRPN("x*(x+4*15)+2", 12d));
-    }
+//    public static void main(String[] args) {
+//        RPN rpn = new RPN();
+//        System.out.println(rpn.computeRPN("x*4+12", 2d));       // result = 20
+//        System.out.println(rpn.computeRPN("3+x*6", 4d));        // result = 27
+//        System.out.println(rpn.computeRPN("2*(x+1)", 6d));      // result = 14
+//        System.out.println(rpn.computeRPN("x-4+4", 8d));        // result = 8
+//        System.out.println(rpn.computeRPN("2*7^x+3", 2d));     // result =
+//        System.out.println(rpn.computeRPN("x*(x+4*15)+2", 12d));
+//    }
 
     public RPN() {
         init();
     }
 
-    private double computeRPN(String formula, double x) {
+    public double computeRPN(String formula, double x) {
         ArrayList<String> postfixTerm = shuntingYard(formula);
         for ( int i = 0; i < postfixTerm.size(); i++ ){
             if (postfixTerm.get(i).equals("x")) {
                 postfixTerm.set(i, String.valueOf(x));
             }
         }
-        System.out.println(postfixTerm);
 
         double result = 0;
         for ( int i = 0; i < postfixTerm.size(); i++) {
@@ -79,7 +78,7 @@ public class RPN {
         return result;
     }
 
-    private ArrayList<String> shuntingYard(String infix) {
+    public ArrayList<String> shuntingYard(String infix) {
         StringBuilder output = new StringBuilder();
         StringBuilder stack = new StringBuilder();
 
@@ -90,7 +89,6 @@ public class RPN {
                 output.append(elem);
                 try{
                     if (!isOperator(infix.charAt(i+1)) ) {
-                        ;
                     } else {
                         output.append(" ");
                     }
@@ -115,11 +113,11 @@ public class RPN {
             else if( isOperator(elem) && (stack.length() == 0 || stack.charAt(stack.length()-1) == '(' ) ) {
                 stack.append(elem);
             }
-            else if( stack.length() > 0 && ((precedence.get(elem) > precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem) == precedence.get(stack.charAt(stack.length()-1)) && associativity.get(elem) == 0)) ) {
+            else if( stack.length() > 0 && ((precedence.get(elem) > precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem).equals(precedence.get(stack.charAt(stack.length() - 1))) && associativity.get(elem) == 0)) ) {
                 stack.append(elem);
             }
-            else if( stack.length() > 0 && ((precedence.get(elem) < precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem) == precedence.get(stack.charAt(stack.length()-1)) && associativity.get(elem) == 1)) ) {
-                while( stack.length() > 0 && ((precedence.get(elem) < precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem) == precedence.get(stack.charAt(stack.length()-1)) && associativity.get(elem) == 1)) ) {
+            else if( stack.length() > 0 && ((precedence.get(elem) < precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem).equals(precedence.get(stack.charAt(stack.length() - 1))) && associativity.get(elem) == 1)) ) {
+                while( stack.length() > 0 && ((precedence.get(elem) < precedence.get(stack.charAt(stack.length()-1))) || (precedence.get(elem).equals(precedence.get(stack.charAt(stack.length() - 1))) && associativity.get(elem) == 1)) ) {
                     output.append(stack.charAt(stack.length()-1));
                     output.append(" ");
                     stack.deleteCharAt(stack.length()-1);
@@ -133,12 +131,10 @@ public class RPN {
             output.append(" ");
         }
 
-        ArrayList<String> returnOutput = new ArrayList<>(Arrays.asList(output.toString().split(" ")));          // I know it's hacky but can't be bothered to refactor this whole function
-
-        return returnOutput;
+        return new ArrayList<>(Arrays.asList(output.toString().split(" ")));  // I know it's hacky but can't be bothered to refactor this whole function
     }
 
-    private boolean isOperator(char symbol) {
+    public boolean isOperator(char symbol) {
         char[] operators = {'+', '-', '*', '/', '(', ')', '^'};
 
         for( char operator: operators ) {
